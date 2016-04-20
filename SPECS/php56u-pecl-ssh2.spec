@@ -66,8 +66,6 @@ if test "x${extver}" != "x%{version}"; then
    exit 1
 fi
 
-mv package.xml %{pecl_name}-%{version}/%{pecl_name}.xml
-
 %{__install} -m 644 -c %{SOURCE1} LICENSE
 %{__install} -m 644 -c %{SOURCE2} README
 
@@ -83,7 +81,7 @@ cd %{pecl_name}-%{version}
 %{__make} install INSTALL_ROOT=%{buildroot}
 
 # Install XML package description
-install -Dpm 644 %{pecl_name}.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 # install config file
 %{__install} -d %{buildroot}%{php_inidir}
@@ -124,13 +122,14 @@ fi
 %doc README
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 
 
 %changelog
 * Wed Apr 20 2016 Carl George <carl.george@rackspace.com> - 0.12-1.ius
 - Port from Fedora to IUS
 - Use %%license when possible
+- Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 
 * Thu Feb 25 2016 Remi Collet <remi@fedoraproject.org> - 0.12-8
 - drop scriptlets (replaced by file triggers in php-pear) #1310546
