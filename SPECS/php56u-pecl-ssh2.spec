@@ -119,7 +119,9 @@ fi
 
 
 %files
-%doc LICENSE README
+%{!?_licensedir:%global license %%doc}
+%license LICENSE
+%doc README
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 %{pecl_xmldir}/%{name}.xml
@@ -128,6 +130,7 @@ fi
 %changelog
 * Wed Apr 20 2016 Carl George <carl.george@rackspace.com> - 0.12-1.ius
 - Port from Fedora to IUS
+- Use %%license when possible
 
 * Thu Feb 25 2016 Remi Collet <remi@fedoraproject.org> - 0.12-8
 - drop scriptlets (replaced by file triggers in php-pear) #1310546
