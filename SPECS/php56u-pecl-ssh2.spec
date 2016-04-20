@@ -1,22 +1,16 @@
-%define _default_patch_fuzz 2 \n\n
-%global php_apiver  %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
-%global php_extdir  %(php-config --extension-dir 2>/dev/null || echo "undefined")
-%global php_version %(php-config --version 2>/dev/null || echo 0)
-%{!?__pecl:     %{expand: %%global __pecl     %{_bindir}/pecl}}
-
 %global pecl_name ssh2
 %global php_base  php56u
 %global ini_name  40-%{pecl_name}.ini
 
-Name:           %{php_base}-pecl-ssh2
+Name:           %{php_base}-pecl-%{pecl_name}
 Version:        0.12
 Release:        1.ius%{?dist}
 Summary:        Bindings for the libssh2 library
 
 License:        PHP
 Group:          Development/Languages
-URL:            http://pecl.php.net/package/ssh2
-Source0:        http://pecl.php.net/get/ssh2-%{version}.tgz
+URL:            http://pecl.php.net/package/%{pecl_name}
+Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
 Source1:        PHP-LICENSE-3.01
 Source2:        php-pecl-ssh2-0.10-README
 
@@ -92,8 +86,8 @@ cd %{pecl_name}-%{version}
 install -Dpm 644 %{pecl_name}.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 
 # install config file
-%{__install} -d %{buildroot}%{_sysconfdir}/php.d
-%{__cat} > %{buildroot}%{_sysconfdir}/php.d/%{ini_name} << 'EOF'
+%{__install} -d %{buildroot}%{php_inidir}
+%{__cat} > %{buildroot}%{php_inidir}/%{ini_name} << 'EOF'
 ; Enable ssh2 extension module
 extension=ssh2.so
 EOF
@@ -126,8 +120,8 @@ fi
 
 %files
 %doc LICENSE README
-%config(noreplace) %{_sysconfdir}/php.d/%{ini_name}
-%{php_extdir}/ssh2.so
+%config(noreplace) %{php_inidir}/%{ini_name}
+%{php_extdir}/%{pecl_name}.so
 %{pecl_xmldir}/%{name}.xml
 
 
