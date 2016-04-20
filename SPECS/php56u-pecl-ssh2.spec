@@ -71,14 +71,15 @@ fi
 
 
 %build
-cd %{pecl_name}-%{version}
+pushd %{pecl_name}-%{version}
 phpize
 %configure
 %{__make} %{?_smp_mflags}
+popd
+
 
 %install
-cd %{pecl_name}-%{version}
-%{__make} install INSTALL_ROOT=%{buildroot}
+%{__make} install INSTALL_ROOT=%{buildroot} -C %{pecl_name}-%{version}
 
 # Install XML package description
 install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
@@ -93,10 +94,8 @@ EOF
 
 %check
 # simple module load test
-cd %{pecl_name}-%{version}
 php --no-php-ini \
-    --define extension_dir=modules \
-    --define extension=%{pecl_name}.so \
+    --define extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
     --modules | grep %{pecl_name}
 
 
