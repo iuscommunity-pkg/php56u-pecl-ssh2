@@ -4,16 +4,13 @@
 %global php_version %(php-config --version 2>/dev/null || echo 0)
 %{!?__pecl:     %{expand: %%global __pecl     %{_bindir}/pecl}}
 
-%define pecl_name ssh2
-%if "%{php_version}" < "5.6"
-%global ini_name  %{pecl_name}.ini
-%else
+%global pecl_name ssh2
+%global php_base  php56u
 %global ini_name  40-%{pecl_name}.ini
-%endif
 
-Name:           php-pecl-ssh2
+Name:           %{php_base}-pecl-ssh2
 Version:        0.12
-Release:        8%{?dist}
+Release:        1.ius%{?dist}
 Summary:        Bindings for the libssh2 library
 
 License:        PHP
@@ -23,26 +20,35 @@ Source0:        http://pecl.php.net/get/ssh2-%{version}.tgz
 Source1:        PHP-LICENSE-3.01
 Source2:        php-pecl-ssh2-0.10-README
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
 BuildRequires:  libssh2-devel >= 1.2
-BuildRequires:  php-devel
-BuildRequires:  php-pear
+BuildRequires:  %{php_base}-devel
+BuildRequires:  %{php_base}-pear
 %if 0%{?fedora} < 24
-Requires(post): %{__pecl}
-Requires(postun): %{__pecl}
+Requires(post): %{php_base}-pear
+Requires(postun): %{php_base}-pear
 %endif
 
+# provide the stock name
+Provides:       php-pecl-%{pecl_name} = %{version}
+Provides:       php-pecl-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names without pecl
+Provides:       php-%{pecl_name} = %{version}
+Provides:       php-%{pecl_name}%{?_isa} = %{version}
+Provides:       %{php_base}-%{pecl_name} = %{version}
+Provides:       %{php_base}-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names in pecl() format
 Provides:       php-pecl(ssh2) = %{version}
 Provides:       php-pecl(%{pecl_name})%{?_isa} = %{version}
+Provides:       %{php_base}-pecl(%{pecl_name}) = %{version}
+Provides:       %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
 
-%if %{?php_zend_api:1}0
+# conflict with the stock name
+Conflicts:      php-pecl-%{pecl_name} < %{version}
+
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
-%else
-# for EL-5
-Requires:       php-api = %{php_apiver}
-%endif
 
 # RPM 4.8
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
@@ -55,8 +61,9 @@ Requires:       php-api = %{php_apiver}
 Bindings to the functions of libssh2 which implements the SSH2 protocol.
 libssh2 is available from http://www.sourceforge.net/projects/libssh2
 
+
 %prep
-%setup -c -q 
+%setup -c -q
 
 extver=$(sed -n '/#define PHP_SSH2_VERSION/{s/.* "//;s/".*$//;p}' %{pecl_name}-%{version}/php_ssh2.h)
 if test "x${extver}" != "x%{version}"; then
@@ -79,7 +86,6 @@ phpize
 
 %install
 cd %{pecl_name}-%{version}
-%{__rm} -rf %{buildroot}
 %{__make} install INSTALL_ROOT=%{buildroot}
 
 # Install XML package description
@@ -91,6 +97,7 @@ install -Dpm 644 %{pecl_name}.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
 ; Enable ssh2 extension module
 extension=ssh2.so
 EOF
+
 
 %check
 # simple module load test
@@ -104,25 +111,20 @@ php --no-php-ini \
 %if 0%{?fedora} < 24
 %if 0%{?pecl_install:1}
 %post
-%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+%{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
 %endif
 
 
 %if 0%{?pecl_uninstall:1}
 %postun
-if [ $1 -eq 0 ] ; then
+if [ $1 -eq 0 ]; then
     %{pecl_uninstall} %{pecl_name} >/dev/null || :
 fi
 %endif
 %endif
 
 
-%clean
-%{__rm} -rf %{buildroot}
-
-
 %files
-%defattr(-,root,root,-)
 %doc LICENSE README
 %config(noreplace) %{_sysconfdir}/php.d/%{ini_name}
 %{php_extdir}/ssh2.so
@@ -130,6 +132,9 @@ fi
 
 
 %changelog
+* Wed Apr 20 2016 Carl George <carl.george@rackspace.com> - 0.12-1.ius
+- Port from Fedora to IUS
+
 * Thu Feb 25 2016 Remi Collet <remi@fedoraproject.org> - 0.12-8
 - drop scriptlets (replaced by file triggers in php-pear) #1310546
 
