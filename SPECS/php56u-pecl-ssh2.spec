@@ -3,7 +3,7 @@
 %global ini_name  40-%{pecl_name}.ini
 
 Name:           %{php_base}-pecl-%{pecl_name}
-Version:        0.12
+Version:        0.13
 Release:        1.ius%{?dist}
 Summary:        Bindings for the libssh2 library
 
@@ -125,6 +125,9 @@ fi
 
 
 %changelog
+* Tue Jun 14 2016 Carl George <carl.george@rackspace.com> - 0.13-1.ius
+- Latest upstream
+
 * Wed Apr 20 2016 Carl George <carl.george@rackspace.com> - 0.12-1.ius
 - Port from Fedora to IUS
 - Use %%license when possible
