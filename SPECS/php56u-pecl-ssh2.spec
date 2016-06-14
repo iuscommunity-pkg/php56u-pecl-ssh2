@@ -33,7 +33,7 @@ Provides:       %{php_base}-%{pecl_name} = %{version}
 Provides:       %{php_base}-%{pecl_name}%{?_isa} = %{version}
 
 # provide the stock and IUS names in pecl() format
-Provides:       php-pecl(ssh2) = %{version}
+Provides:       php-pecl(%{pecl_name}) = %{version}
 Provides:       php-pecl(%{pecl_name})%{?_isa} = %{version}
 Provides:       %{php_base}-pecl(%{pecl_name}) = %{version}
 Provides:       %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
