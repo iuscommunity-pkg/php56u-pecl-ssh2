@@ -46,9 +46,8 @@ Requires:       php(api) = %{php_core_api}
 
 # RPM 4.8
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_provides_in: %filter_provides_in %{php_ztsextdir}/.*\.so$}
 %{?filter_setup}
-# RPM 4.9
-%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
 
 
 %description
@@ -125,6 +124,9 @@ fi
 
 
 %changelog
+* Thu Jun 16 2016 Ben Harper <ben.harper@rackspace.com> - 0.13-2.ius
+- update filters to include zts
+
 * Tue Jun 14 2016 Carl George <carl.george@rackspace.com> - 0.13-1.ius
 - Latest upstream
 
