@@ -4,7 +4,7 @@
 
 Name:           %{php_base}-pecl-%{pecl_name}
 Version:        0.13
-Release:        1.ius%{?dist}
+Release:        2.ius%{?dist}
 Summary:        Bindings for the libssh2 library
 
 License:        PHP
